@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-//conta quantos sinais existem no arquivo
-int contaSinais(char *sinais[]) {
+//conta quantos elementos um vetor possui (util para os sinais)
+int contaElementos(char *sinais[]) {
 
     int count = 0;
     while (sinais[count] != NULL) {
@@ -89,6 +89,13 @@ int main() {
             }
         }
 
+        //remove os elementos duplicados da ultima posicao
+        for (int i = 0; i < contaElementos(sinais); i++) {
+
+            pontos[(contaElementos(pontos)) - 1] = NULL;
+        }
+
+        
         puts(pontos[0]);
         escreveArquivo(nome_arquivo, pontos[0]);
 
