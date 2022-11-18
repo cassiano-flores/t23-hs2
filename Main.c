@@ -14,26 +14,10 @@ int contaElementos(char *sinais[]) {
     return count;
 }
 
-//funcao que escreve no arquivo, na main eh chamado varias vezes
-void escreveArquivo(char nome[], char *pontos[]) {
-
-    FILE *fp;
-
-    int size = strlen(nome);
-    nome[size-3] = 't';
-    nome[size-2] = 'x';
-    nome[size-1] = 't';
-
-    fp = fopen(nome, "a");
-
-    fwrite(pontos, sizeof(pontos), 2, fp);
-
-    fclose(fp);
-}
-
 int main() {
 
     FILE *ptr;                                   //ponteiro do arquivo
+    FILE *fp;
     char nome_arquivo[50];                       //nome do arquivo a ser lido
     char armazenamento_arquivo[1023][1023];      //vetor com todo conteudo do arquivo
     char *sinais[1000] = { NULL };               //vetor com cada sinal em um indice
@@ -42,7 +26,6 @@ int main() {
     printf("Digite o nome do arquivo a ser processado (com a extensao): ");
 	scanf("%s", nome_arquivo);
     ptr = fopen(nome_arquivo, "r");
-    //ptr = fopen("data.csv", "r");
 
     if (ptr != NULL) {    //se conseguiu ler...
 
@@ -70,21 +53,21 @@ int main() {
         for (int i = 0; i < 1000; i++) {
 
             strcpy(tmp2, armazenamento_arquivo[i+1]);
-            for (int j = 0; j < 15; j++) {
+            for (int j = 0; j < 30; j++) {
 
                 armazenamento_arquivo[i][j] = tmp2[j];
             }
         }
 
         // -- copia pontos --
-        int j = 0;
+        int v = 0;
         for (int i = 0; i < 1010; i++) {
 
             char *aux2 = strtok(armazenamento_arquivo[i], ",");  //separa os pontos das " , "
 
-            for ( ; aux2 != NULL; j++) {
+            for ( ; aux2 != NULL; v++) {
 
-                pontos[j] = aux2;           //armazena cada ponto em um indice
+                pontos[v] = aux2;           //armazena cada ponto em um indice
                 aux2 = strtok(NULL, ",");   //separa a proxima string (ponto)
             }
         }
@@ -95,33 +78,51 @@ int main() {
             pontos[(contaElementos(pontos)) - 1] = NULL;
         }
 
-        
-        puts(pontos[0]);
-        escreveArquivo(nome_arquivo, pontos[0]);
+        // -- parte final, gera o arquivo --
+        //transforma em txt
+        int size = strlen(nome_arquivo);
+        nome_arquivo[size-3] = 't';
+        nome_arquivo[size-2] = 'x';
+        nome_arquivo[size-1] = 't';
 
-        //está acontecendo o seguinte comportamento:
-        //de 3 sinais, o 1° ponto (indice):
-        //128 128 0
+        fp = fopen(nome_arquivo, "a");
 
-        //de 3 sinais, o 2° ponto (indice):
-        //128 0
+        //escreve o titulo (const unsigned...)
+        char titulo[50] = { NULL };
+        int qtd_pontos = (contaElementos(pontos)/contaElementos(sinais));
 
-        //de 3 sinais, o 3° ponto (indice):
-        // 0
+        for (int i = 0; i < contaElementos(sinais); i++) {
 
-        //...
+        sprintf(titulo, "const unsigned char %s[%d] = {", sinais[i], qtd_pontos);
+        fwrite(titulo, 50, 1, fp);
+        int count = 0;
 
+            //escreve cada ponto, a cada 10 pontos quebra a linha
+            for (int j = i; j < contaElementos(pontos); j += contaElementos(sinais)) {
 
+                if (((count % 10) == 0)) {
+                    fwrite("\n", 1, 1, fp);
+                }
+                fwrite(pontos[j], 3, 1, fp);
 
+                if (j + contaElementos(sinais) < contaElementos(pontos)) {
+                    fwrite(", ", 2, 1, fp);
+                }
 
+                count++;
+            }
+            fwrite(" };\n\n", 5, 1, fp);
+        }
 
-
-
+        fclose(fp);
         fclose(ptr);
 
-    } else {
+    } else {   //caso digite errado
         printf("Deu errado!");
     }
 
     return 0;
 }
+
+//tratar "deu errado!"
+//bugzinho de dois numeros no txt
