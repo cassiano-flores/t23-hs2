@@ -27,6 +27,13 @@ int main() {
 	scanf("%s", nome_arquivo);
     ptr = fopen(nome_arquivo, "r");
 
+    while (ptr == NULL) {
+
+        printf("O nome de arquivo digitado nao foi encontrado, digite novamente (com a extensao): ");
+	    scanf("%s", nome_arquivo);
+        ptr = fopen(nome_arquivo, "r");
+    }
+
     if (ptr != NULL) {    //se conseguiu ler...
 
         int k = 0;
@@ -103,7 +110,7 @@ int main() {
                 if (((count % 10) == 0)) {
                     fwrite("\n", 1, 1, fp);
                 }
-                fwrite(pontos[j], 3, 1, fp);
+                fwrite(pontos[j], strlen(pontos[j]), 1, fp);
 
                 if (j + contaElementos(sinais) < contaElementos(pontos)) {
                     fwrite(", ", 2, 1, fp);
@@ -117,12 +124,9 @@ int main() {
         fclose(fp);
         fclose(ptr);
 
-    } else {   //caso digite errado
-        printf("Deu errado!");
+    } else {
+        printf("Erro inesperado!");
     }
 
     return 0;
 }
-
-//tratar "deu errado!"
-//bugzinho de dois numeros no txt
