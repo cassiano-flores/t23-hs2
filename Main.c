@@ -1,3 +1,12 @@
+/* ======================================================================
+
+                  Trabalho 2 - Turma 030 - 2022/2
+     Integração Hardware/Software II - Prof. Renan Caron Viero
+
+  Cassiano Luis Flores Michel – 20204012-7 – Ciência da Computação
+
+====================================================================== */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
